@@ -12,6 +12,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -49,7 +50,6 @@ import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.NavigationDrawerItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
@@ -85,6 +85,9 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.dialog
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import coil.compose.AsyncImage
+import coil.compose.AsyncImagePainter
+import coil.request.ImageRequest
 import com.example.mycomposedemo.R
 import com.example.mycomposedemo.models.BottomItemData
 import com.example.mycomposedemo.models.GroupModel
@@ -92,6 +95,7 @@ import com.example.mycomposedemo.repo.net.HitokotoRetrofitInstance
 import com.example.mycomposedemo.repo.net.PearnoRetrofitInstance
 import com.example.mycomposedemo.router.AppNavHost
 import com.example.mycomposedemo.router.Screen
+import com.example.mycomposedemo.ui.common.UserCard
 import com.example.mycomposedemo.ui.components.Banner
 import com.example.mycomposedemo.ui.components.NavItem
 import com.example.mycomposedemo.ui.sample.AnswerCard
@@ -129,13 +133,15 @@ fun HomeScreen(
         menuData.size
     })
 
-    var currentSelect by remember {
-        mutableStateOf(pageState.currentPage)
-    }
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
     val homeViewModel = HomeViewModel()
+    var isHomeTopbarVisible by remember {
+        mutableStateOf(true)
+    }
+    isHomeTopbarVisible =
+        currentDestination?.hierarchy?.any { it.route == Screen.Home.router } == true
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     //TODO 使用Provider
@@ -144,9 +150,7 @@ fun HomeScreen(
     } else {
         //onScroll(true)
     }
-    var title by remember {
-        mutableStateOf("首页")
-    }
+    val title = "首页"
     var isNavBarVisible by remember {
         mutableStateOf(
             true
@@ -162,7 +166,6 @@ fun HomeScreen(
             .collect { (index, offset) ->
                 // 检查是否向上滑动
                 val currentScrollPosition = index * height + offset
-                //title = offset.toString()
                 if (currentScrollPosition > lastScrollPosition) {
                     //onScroll(false)
                     isNavBarVisible = false
@@ -179,12 +182,12 @@ fun HomeScreen(
         drawerState = drawerState,
         drawerContent = {
             ModalDrawerSheet(modifier = Modifier.width(300.dp)) {
-                Text("云鹤工具箱", modifier = Modifier.padding(16.dp))
+                UserCard()
                 HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
                 Spacer(modifier = Modifier.height(8.dp))
                 NavigationDrawerItem(
                     label = { Text(text = "关于") },
-                    selected = false,
+                    selected = true,
                     colors = NavigationDrawerItemDefaults.colors(
                         unselectedIconColor = MaterialTheme.colorScheme.primary
                     ),
@@ -242,10 +245,9 @@ fun HomeScreen(
             }
         }
     ) {
-
         Scaffold(
             topBar = {
-                if (currentDestination?.hierarchy?.any { it.route == Screen.Home.router } == true) {
+                if (isHomeTopbarVisible) {
                     TopAppBar(
                         navigationIcon = {
                             IconButton(onClick = {
@@ -256,6 +258,7 @@ fun HomeScreen(
                                 Icon(
                                     painter = painterResource(id = R.drawable.menu),
                                     contentDescription = "",
+                                    tint = MaterialTheme.colorScheme.primary,
                                     modifier = Modifier.size(24.dp)
                                 )
                             }
@@ -275,7 +278,7 @@ fun HomeScreen(
                 }
             },
             bottomBar = {
-                if (currentDestination?.hierarchy?.any { it.route == Screen.Home.router } == true) {
+                if (isHomeTopbarVisible) {
                     AnimatedVisibility(visible = isNavBarVisible) {
                         NavigationBar {
                             menuData.forEachIndexed { index, item ->
@@ -306,7 +309,7 @@ fun HomeScreen(
             val context = LocalContext.current
             NavHost(
                 modifier = Modifier
-                    .padding(innerPadding)
+                    .padding(if (isHomeTopbarVisible) innerPadding else PaddingValues(0.dp))
                     .fillMaxSize(),
                 navController = navController,
                 startDestination = Screen.Home.router
@@ -318,7 +321,7 @@ fun HomeScreen(
                         modifier = Modifier.fillMaxSize()
                     ) { page ->
                         when (page) {
-                            0 -> Home(
+                            0 -> HomeDetail(
                                 listState,
                                 images,
                                 homeViewModel,
@@ -333,16 +336,6 @@ fun HomeScreen(
                     }
                 }
 
-                composable(Screen.BrainTeasers.router) {
-                    DialogPage(
-                        navController = navController,
-                        dialogTitle = "脑筋急转弯",
-                        icon = ImageVector.vectorResource(id = R.drawable.question),
-                        confirmButton = {
-                        }) {
-                        AnswerCard(context)
-                    }
-                }
                 composable(Screen.SettingTheme.router) {
                     AppearancePreferences(
                         back = { navController.popBackStack() },
@@ -355,16 +348,42 @@ fun HomeScreen(
                     SettingScreen(LocalWindow.current)
                 }
 
-                dialog(Screen.CrazyThursday.router) {
-                    TextDialogPage(context = context, title = "疯狂星期四", navController = navController) {
-                        PearnoRetrofitInstance.api.getKFC().text
+                dialog(Screen.BrainTeasers.router) {
+                    DialogPage(
+                        navController = navController,
+                        dialogTitle = "脑筋急转弯",
+                        icon = ImageVector.vectorResource(id = R.drawable.question),
+                        confirmButton = {
+                        }) {
+                        AnswerCard(context)
                     }
                 }
+
+                buildDialogNavHost(context, navController)
 
                 buildHitokoto(navController, context, hitokotoTitle)
 
                 composable(Screen.Chat.router) {
                     ChatSample()
+                }
+                composable(Screen.LearnWorld.router) {
+                    AppNavHost(title = "60s读世界", onBack = {
+                        navController.popBackStack()
+                    }) {
+
+                        AsyncImage(
+                            model = ImageRequest.Builder(LocalContext.current)
+                                .data("https://api.pearktrue.cn/api/60s/image/")
+                                .crossfade(true)
+                                .build(),
+                            placeholder = painterResource(id = R.drawable.loading),
+                            contentDescription = "60s读世界新闻图片",
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(16.dp)
+                                .clip(MaterialTheme.shapes.small)
+                        )
+                    }
                 }
                 composable(Screen.Movie.router) {
                     AppNavHost(title = "热门推荐", onBack = {
@@ -411,16 +430,46 @@ fun HomeScreen(
     }
 }
 
-private fun  NavGraphBuilder.buildHitokoto(
+private fun NavGraphBuilder.buildDialogNavHost(
+    context: Context,
+    navController: NavHostController,
+) {
+    dialog(Screen.Tiangou.router) {
+        TextDialogPage(context = context, title = "舔狗日记", navController = navController) {
+            PearnoRetrofitInstance.api.getTiangou()
+        }
+    }
+
+    dialog(Screen.Romantic.router) {
+        TextDialogPage(context = context, title = "经典情话", navController = navController) {
+            PearnoRetrofitInstance.api.getRomatic()
+        }
+    }
+
+    dialog(Screen.Rainbow.router) {
+        TextDialogPage(context = context, title = "彩虹屁", navController = navController) {
+            PearnoRetrofitInstance.api.getRainbow()
+        }
+    }
+
+    dialog(Screen.CrazyThursday.router) {
+        TextDialogPage(context = context, title = "疯狂星期四", navController = navController) {
+            PearnoRetrofitInstance.api.getKFC().text
+        }
+    }
+}
+
+private fun NavGraphBuilder.buildHitokoto(
     navController: NavHostController,
     context: Context,
-    title : String
+    title: String,
 ) {
     dialog(Screen.Hitokoto.router + "{c}",
         arguments = listOf(navArgument("c") {
             type = NavType.StringType
             nullable = true
-        })) {
+        })
+    ) {
         val c = it.arguments?.getString("c")
         TextDialogPage(context = context, title = title, navController = navController) {
             HitokotoRetrofitInstance.api.getHitokoto(c).hitokoto
@@ -431,7 +480,7 @@ private fun  NavGraphBuilder.buildHitokoto(
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun Home(
+private fun HomeDetail(
     listState: LazyListState,
     images: List<Int>,
     homeViewModel: HomeViewModel,

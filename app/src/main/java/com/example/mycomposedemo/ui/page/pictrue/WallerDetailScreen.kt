@@ -16,12 +16,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.mycomposedemo.repo.models.wallerpaper.Category
+import com.example.mycomposedemo.repo.models.wallerpaper.PictrueCategory
 import com.example.mycomposedemo.repo.models.wallerpaper.WallerDetail
 import com.example.mycomposedemo.repo.net.PictureRetrofitInstance
 import com.example.mycomposedemo.ui.components.PictrueCategoryCard
 import com.example.mycomposedemo.ui.util.Dimensions
-import com.example.mycomposedemo.viewmodel.getTextFunctions
 
 @Composable
 fun WallerDetailScreen(id : String = "4e4d610cdf714d2966000003") {
@@ -50,11 +49,11 @@ fun WallerDetailScreen(id : String = "4e4d610cdf714d2966000003") {
 
                 items(it.size) { index ->
                     val value = datas[index]
-                    val category = Category(
+                    val pictrueCategory = PictrueCategory(
                         id = value.id,
                         cover = value.img,
                         type = value.source_type.length)
-                    PictrueCategoryCard(category = category,
+                    PictrueCategoryCard(pictrueCategory = pictrueCategory,
                         click = {
 
                         })

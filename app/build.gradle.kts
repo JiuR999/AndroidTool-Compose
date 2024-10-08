@@ -63,7 +63,7 @@ dependencies {
     implementation(Compose.composeConstraintLayout)
 
     //Coil库
-    implementation ("io.coil-kt:coil-compose:2.0.0-rc03")
+    implementation("io.coil-kt:coil-compose:2.7.0")
 
     implementation("io.sanghun:compose-video:1.2.0")
     implementation("androidx.media3:media3-exoplayer:1.1.0") // [Required] androidx.media3 ExoPlayer dependency
@@ -99,6 +99,7 @@ dependencies {
     // Retrofit
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation("com.squareup.retrofit2:converter-scalars:2.9.0")
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.0")
 

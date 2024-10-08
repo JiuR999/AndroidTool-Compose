@@ -19,7 +19,6 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.Tab
-import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -30,12 +29,16 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mycomposedemo.repo.models.pearno.HotNew
 import com.example.mycomposedemo.repo.net.PearnoRetrofitInstance
+import com.example.mycomposedemo.ui.sample.CustomScrollableTabRow
+import com.example.mycomposedemo.ui.sample.tabIndicatorOffset
 import kotlinx.coroutines.launch
 
 /**
@@ -58,10 +61,11 @@ fun TabScreen(tabTitles : List<String>,
     }
     val scope = rememberCoroutineScope()
 
-    Column(modifier = modifier
+    Column(modifier = modifier.padding(horizontal = 16.dp)
         .fillMaxSize()) {
-        ScrollableTabRow(
+        CustomScrollableTabRow(
             selectedTabIndex = pageState.currentPage,
+            containerColor = Color.White,
             indicator = { positions ->
                 Box(
                     Modifier
@@ -70,7 +74,7 @@ fun TabScreen(tabTitles : List<String>,
                         .fillMaxHeight()
                         .padding(horizontal = 16.dp, vertical = 8.dp)
                         .background(
-                            color = MaterialTheme.colorScheme.primary,
+                            color = MaterialTheme.colorScheme.secondaryContainer,
                             shape = RoundedCornerShape(16.dp)
                         )
                 )
@@ -142,14 +146,3 @@ fun TabScreenPreview() {
     }
 }
 
-@Composable
-fun TabContent(content: String) {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        contentAlignment = Center
-    ) {
-        Text(text = content)
-    }
-}

@@ -51,7 +51,6 @@ fun HotNewPage(){
             var errorMessage by remember { mutableStateOf<String?>(null) }
             val viewModel = UiViewModel()
             val state = viewModel.uiState.collectAsState()
-            val scope = rememberCoroutineScope()
             LaunchedEffect(Unit) {
                 try {
                     Log.d("当前TAb", "第" + it  +"页")

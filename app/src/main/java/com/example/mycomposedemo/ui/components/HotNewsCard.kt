@@ -27,6 +27,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -34,7 +35,6 @@ import com.example.mycomposedemo.R
 import com.example.mycomposedemo.repo.models.pearno.NewsData
 
 
-@OptIn(ExperimentalTextApi::class)
 @Composable
 fun HotNewsCard(
     newsData: NewsData,
@@ -46,7 +46,7 @@ fun HotNewsCard(
     Card(
         shape = MaterialTheme.shapes.extraLarge,
         modifier = modifier
-            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .padding(vertical = 8.dp)
             .height(48.dp),
         colors = CardDefaults.cardColors(containerColor = colorResource(id = R.color.back))
 
@@ -78,46 +78,39 @@ fun HotNewsCard(
 
                 }
             } else {
-                    // 计算 Text 的高度
-                    val textHeight =
-                        with(LocalDensity.current) { 48.sp.toPx() } + with(LocalDensity.current) { 4.dp.toPx() }
-/*                    Box(
-                        modifier = Modifier
-                            .width(28.dp)
-                            .height(36.dp)
-                            .align(Alignment.TopEnd)
-                            .padding(top = 26.dp)
-                            .background(
-                                MaterialTheme.colorScheme.tertiaryContainer,
-                                shape = MaterialTheme.shapes.medium
-                            )
-                    )*/
-Box(modifier = Modifier.align(Alignment.CenterVertically)){
-    Text(
-        text = newsData.index,
-        style = MaterialTheme.typography.headlineMedium,
-        textAlign = TextAlign.Center,
-        color = if (newsData.index == "1") Color.Red.copy(0.9f) else MaterialTheme.colorScheme.tertiaryContainer,
-    )
-}
+                // 计算 Text 的高度
+                val textHeight =
+                    with(LocalDensity.current) { 48.sp.toPx() } + with(LocalDensity.current) { 4.dp.toPx() }
+                /*                    Box(
+                                        modifier = Modifier
+                                            .width(28.dp)
+                                            .height(36.dp)
+                                            .align(Alignment.TopEnd)
+                                            .padding(top = 26.dp)
+                                            .background(
+                                                MaterialTheme.colorScheme.tertiaryContainer,
+                                                shape = MaterialTheme.shapes.medium
+                                            )
+                                    )*/
+                Box(modifier = Modifier.align(Alignment.CenterVertically)) {
+                    Text(
+                        text = newsData.index,
+                        style = MaterialTheme.typography.headlineMedium,
+                        textAlign = TextAlign.Center,
+                        color = if (newsData.index == "1") Color.Red.copy(0.9f) else MaterialTheme.colorScheme.tertiaryContainer,
+                    )
+                }
             }
 
             Text(
                 text = newsData.title,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
                 style = if (newsData.title.length < 15) typography.titleMedium else typography.titleSmall,
-
                 modifier = Modifier
                     .align(Alignment.CenterVertically)
                     .padding(8.dp)
-            )
-            Spacer(modifier = Modifier.weight(1f))
-
-            Icon(
-                Icons.TwoTone.LocalFireDepartment,
-                tint = Color.Red.copy(0.9f),
-                contentDescription = "热度",
-                modifier = Modifier
-                    .align(Alignment.CenterVertically)
+                    .weight(5f)
             )
 
             Text(
@@ -127,9 +120,18 @@ Box(modifier = Modifier.align(Alignment.CenterVertically)){
                     "" + newsData.hot.toInt() / 10000 + "w"
                 },
                 style = typography.bodySmall,
-                modifier = Modifier.align(Alignment.CenterVertically)
+                textAlign = TextAlign.End,
+                modifier = Modifier.align(Alignment.CenterVertically).weight(2f)
             )
+            Icon(
+                Icons.TwoTone.LocalFireDepartment,
+                tint = Color.Red.copy(0.9f),
+                contentDescription = "热度",
+                modifier = Modifier
+                    .align(Alignment.CenterVertically)
+                    .size(16.dp)
 
+            )
             Spacer(modifier = Modifier.width(8.dp))
 
         }

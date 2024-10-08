@@ -67,12 +67,10 @@ fun AppNavHost(
                     title = {
                         Column {
                             Text(text = title)
-                            if (subTitle != null) {
-                                Text(
-                                    text = subTitle,
-                                    style = MaterialTheme.typography.titleSmall
-                                )
-                            }
+                            Text(
+                                text = subTitle,
+                                style = MaterialTheme.typography.titleSmall
+                            )
                         }
                     },
                     navigationIcon = {

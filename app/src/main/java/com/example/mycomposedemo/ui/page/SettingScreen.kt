@@ -25,6 +25,7 @@ import androidx.compose.material.icons.twotone.DarkMode
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -55,6 +56,7 @@ import com.example.mycomposedemo.ui.theme.ThemeHelper
 import com.example.mycomposedemo.ui.theme.ThemeHelper.modifyDarkThemePreference
 import com.example.mycomposedemo.ui.theme.ThemeHelper.switchDynamicColor
 import com.example.mycomposedemo.ui.theme.ThemeSettingsProvider
+import com.example.mycomposedemo.ui.util.Dimensions
 import com.example.mycomposedemo.ui.util.autoRippleAnimation
 import com.example.mycomposedemo.ui.util.rememberRippleAnimationState
 
@@ -84,7 +86,6 @@ fun SettingScreen(window: Window) {
         modifier = Modifier.autoRippleAnimation(window, rippleAnimationState)
     ) {
         Column(modifier = Modifier.padding(it)) {
-
 
             SettingsGroup(title = { Text(text = "主题设置") }) {
                 Card(
@@ -143,7 +144,7 @@ fun SettingScreen(window: Window) {
                     HorizontalPager(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = 16.dp)
+                            .padding(top = Dimensions.DefaultPadding)
                             .clearAndSetSemantics { },
                         state = pageState
                     ) { pageIndex ->
@@ -164,7 +165,7 @@ fun SettingScreen(window: Window) {
                     Row(
                         Modifier
                             .height(50.dp)
-                            .padding(top = 4.dp)
+                            .padding(top = 8.dp)
                             .fillMaxWidth(),
                         horizontalArrangement = Arrangement.Center
                     ) {

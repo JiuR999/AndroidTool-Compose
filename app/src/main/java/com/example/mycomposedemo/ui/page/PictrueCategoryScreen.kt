@@ -1,18 +1,18 @@
 package com.example.mycomposedemo.ui.page
 
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.ScrollableDefaults
-import androidx.compose.foundation.gestures.scrollable
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.twotone.ArrowBack
 import androidx.compose.material3.CircularProgressIndicator
@@ -39,24 +39,25 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.mycomposedemo.repo.models.wallerpaper.Category
+import com.example.mycomposedemo.R
+import com.example.mycomposedemo.repo.models.wallerpaper.PictrueCategory
 import com.example.mycomposedemo.repo.models.wallerpaper.WallerCategory
 import com.example.mycomposedemo.repo.net.PictureRetrofitInstance
+import com.example.mycomposedemo.ui.common.EmptyCard
 import com.example.mycomposedemo.ui.components.PictrueCategoryCard
 import com.example.mycomposedemo.ui.page.pictrue.WallerDetailScreen
 import com.example.mycomposedemo.ui.util.Dimensions
-import com.example.mycomposedemo.ui.util.Shapes
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PictrueCategoryScreen(onBack: () -> Unit ) {
+fun PictrueCategoryScreen(onBack: () -> Unit) {
     val navController = rememberNavController()
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
     var title by remember {
@@ -71,7 +72,7 @@ fun PictrueCategoryScreen(onBack: () -> Unit ) {
     var snackbarVisible by remember { mutableStateOf(false) }
     val snackbarHostState = remember { SnackbarHostState() }
 
-    var categoryId : String? = null
+    var categoryId: String? = null
     var errorMessage by remember { mutableStateOf<String?>(null) }
 
     val coroutineScope = rememberCoroutineScope()
@@ -113,10 +114,11 @@ fun PictrueCategoryScreen(onBack: () -> Unit ) {
                 )
             }
         }) {
-        Surface(modifier = Modifier
-            .padding(it)
-            .nestedScroll(scrollBehavior.nestedScrollConnection),
-            ) {
+        Surface(
+            modifier = Modifier
+                .padding(it)
+                .nestedScroll(scrollBehavior.nestedScrollConnection),
+        ) {
             if (isLoading) {
                 Box(modifier = Modifier.fillMaxSize()) {
                     CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
@@ -125,19 +127,18 @@ fun PictrueCategoryScreen(onBack: () -> Unit ) {
                 errorMessage?.let {
                     Text(text = "Error: $it", color = MaterialTheme.colorScheme.error)
                 } ?: run {
-                    datas?.res?.category?.let {
+                    datas?.res?.pictrueCategory?.let {
                         val datas = it
                         NavHost(
                             navController = navController,
                             startDestination = "category"
                         ) {
                             composable("category") {
-                                buildCategoryScreen(datas, navController, onClick = {
+                                buildCategoryScreen(datas, onClick = {
                                     coroutineScope.launch {
                                         snackbarHostState.showSnackbar("点击了${datas[it].id}")
                                     }
                                     categoryId = datas[it].id
-
                                     navController.navigate("detail/${categoryId}")
                                     title = datas[it].name
                                 })
@@ -152,7 +153,7 @@ fun PictrueCategoryScreen(onBack: () -> Unit ) {
                         }
 
                     } ?: run {
-                        //数据为空
+                        EmptyCard()
                     }
                 }
             }
@@ -169,9 +170,8 @@ fun PictrueCategoryScreen(onBack: () -> Unit ) {
 
 @Composable
 private fun buildCategoryScreen(
-    datas: List<Category>,
-    navController: NavHostController,
-    onClick: (index : Int) -> Unit,
+    datas: List<PictrueCategory>,
+    onClick: (index: Int) -> Unit,
 ) {
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
@@ -181,7 +181,7 @@ private fun buildCategoryScreen(
     ) {
         items(datas.size) { index ->
             val category = datas[index]
-            PictrueCategoryCard(category = category,
+            PictrueCategoryCard(pictrueCategory = category,
                 click = {
                     onClick(index)
                 })

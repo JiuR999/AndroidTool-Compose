@@ -18,9 +18,7 @@ class UiViewModel : ViewModel() {
 
     fun loadData(url: String) {
         viewModelScope.launch {
-            Log.e("历史上的今天","初始化")
             _uiState.value = UiState.Loading
-            Log.e("历史上的今天","Loding...")
             val data = withContext(Dispatchers.IO) {
                 //"https://api.pearktrue.cn/api/xfai/?message=$que"
                 fetchData(url)
@@ -34,11 +32,6 @@ class UiViewModel : ViewModel() {
     }
 
     private suspend fun fetchData(url: String): String = withContext(Dispatchers.IO){
-        /*val client = OkHttpClient()
-        val request = Request.Builder().url(url).build()
-        val response = client.newCall(request).execute()*/
-
-        //response.body?.string() ?: "error"
         return@withContext OkHttpUtils.get(url)
     }
 }
