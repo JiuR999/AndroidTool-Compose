@@ -71,17 +71,21 @@ fun AlertTextDialog(
 @Composable
 fun AlertContentDialog(
     onDismissRequest: () -> Unit,
-    dialogTitle: String,
-    icon: ImageVector,
+    dialogTitle: String? = null,
+    icon: ImageVector? = null,
     confirmButton: @Composable () -> Unit,
     content: @Composable () -> Unit,
 ) {
     AlertDialog(
         icon = {
-            Icon(icon, contentDescription = "Example Icon")
+            icon?.let {
+                Icon(icon, contentDescription = "Example Icon")
+            }
         },
         title = {
-            Text(text = dialogTitle)
+            dialogTitle?.let {
+                Text(text = dialogTitle)
+            }
         },
         text = {
             content()

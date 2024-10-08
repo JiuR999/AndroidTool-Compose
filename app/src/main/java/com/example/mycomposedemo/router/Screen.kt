@@ -34,6 +34,8 @@ sealed class Screen(val router: String) {
 
     //    脑筋急转弯
     data object BrainTeasers : Screen("brainteasers")
+    //小红书图集解析
+    data object XiaoHongShu : Screen("xhongshu")
 
     //经典情话
     data object Romantic : Screen("romantic")

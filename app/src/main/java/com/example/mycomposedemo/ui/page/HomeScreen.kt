@@ -50,6 +50,7 @@ import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.NavigationDrawerItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
@@ -166,6 +167,7 @@ fun HomeScreen(
             .collect { (index, offset) ->
                 // 检查是否向上滑动
                 val currentScrollPosition = index * height + offset
+                //title = offset.toString()
                 if (currentScrollPosition > lastScrollPosition) {
                     //onScroll(false)
                     isNavBarVisible = false
@@ -245,6 +247,7 @@ fun HomeScreen(
             }
         }
     ) {
+
         Scaffold(
             topBar = {
                 if (isHomeTopbarVisible) {
@@ -336,6 +339,16 @@ fun HomeScreen(
                     }
                 }
 
+                composable(Screen.BrainTeasers.router) {
+                    DialogPage(
+                        navController = navController,
+                        dialogTitle = "脑筋急转弯",
+                        icon = ImageVector.vectorResource(id = R.drawable.question),
+                        confirmButton = {
+                        }) {
+                        AnswerCard(context)
+                    }
+                }
                 composable(Screen.SettingTheme.router) {
                     AppearancePreferences(
                         back = { navController.popBackStack() },
@@ -346,6 +359,24 @@ fun HomeScreen(
 
                 composable(Screen.Setting.router) {
                     SettingScreen(LocalWindow.current)
+                }
+
+                composable(Screen.XiaoHongShu.router) {
+                    AppNavHost("小红书解析", onBack = {
+                        navController.popBackStack()
+                    }) {
+                        XiaoHongShuPage()
+                    }
+                }
+
+                dialog(Screen.CrazyThursday.router) {
+                    TextDialogPage(
+                        context = context,
+                        title = "疯狂星期四",
+                        navController = navController
+                    ) {
+                        PearnoRetrofitInstance.api.getKFC().text
+                    }
                 }
 
                 dialog(Screen.BrainTeasers.router) {
@@ -424,181 +455,189 @@ fun HomeScreen(
                     }
                 }
             }
-
         }
-
-    }
 }
-
-private fun NavGraphBuilder.buildDialogNavHost(
-    context: Context,
-    navController: NavHostController,
-) {
-    dialog(Screen.Tiangou.router) {
-        TextDialogPage(context = context, title = "舔狗日记", navController = navController) {
-            PearnoRetrofitInstance.api.getTiangou()
-        }
-    }
-
-    dialog(Screen.Romantic.router) {
-        TextDialogPage(context = context, title = "经典情话", navController = navController) {
-            PearnoRetrofitInstance.api.getRomatic()
-        }
-    }
-
-    dialog(Screen.Rainbow.router) {
-        TextDialogPage(context = context, title = "彩虹屁", navController = navController) {
-            PearnoRetrofitInstance.api.getRainbow()
-        }
-    }
-
-    dialog(Screen.CrazyThursday.router) {
-        TextDialogPage(context = context, title = "疯狂星期四", navController = navController) {
-            PearnoRetrofitInstance.api.getKFC().text
-        }
-    }
 }
+        private fun NavGraphBuilder.buildDialogNavHost(
+            context: Context,
+            navController: NavHostController,
+        ) {
+            dialog(Screen.Tiangou.router) {
+                TextDialogPage(
+                    context = context,
+                    title = "舔狗日记",
+                    navController = navController
+                ) {
+                    PearnoRetrofitInstance.api.getTiangou()
+                }
+            }
 
-private fun NavGraphBuilder.buildHitokoto(
-    navController: NavHostController,
-    context: Context,
-    title: String,
-) {
-    dialog(Screen.Hitokoto.router + "{c}",
-        arguments = listOf(navArgument("c") {
-            type = NavType.StringType
-            nullable = true
-        })
-    ) {
-        val c = it.arguments?.getString("c")
-        TextDialogPage(context = context, title = title, navController = navController) {
-            HitokotoRetrofitInstance.api.getHitokoto(c).hitokoto
+            dialog(Screen.Romantic.router) {
+                TextDialogPage(
+                    context = context,
+                    title = "经典情话",
+                    navController = navController
+                ) {
+                    PearnoRetrofitInstance.api.getRomatic()
+                }
+            }
+
+            dialog(Screen.Rainbow.router) {
+                TextDialogPage(context = context, title = "彩虹屁", navController = navController) {
+                    PearnoRetrofitInstance.api.getRainbow()
+                }
+            }
+
+            dialog(Screen.CrazyThursday.router) {
+                TextDialogPage(
+                    context = context,
+                    title = "疯狂星期四",
+                    navController = navController
+                ) {
+                    PearnoRetrofitInstance.api.getKFC().text
+                }
+            }
         }
-    }
-}
+
+        private fun NavGraphBuilder.buildHitokoto(
+            navController: NavHostController,
+            context: Context,
+            title: String,
+        ) {
+            dialog(
+                Screen.Hitokoto.router + "{c}",
+                arguments = listOf(navArgument("c") {
+                    type = NavType.StringType
+                    nullable = true
+                })
+            ) {
+                val c = it.arguments?.getString("c")
+                TextDialogPage(context = context, title = title, navController = navController) {
+                    HitokotoRetrofitInstance.api.getHitokoto(c).hitokoto
+                }
+            }
+        }
 
 
-@OptIn(ExperimentalFoundationApi::class)
-@Composable
-private fun HomeDetail(
-    listState: LazyListState,
-    images: List<Int>,
-    homeViewModel: HomeViewModel,
-    navController: NavController,
-) {
-    val ps = rememberPagerState {
-        images.size
-    }
-    LazyColumn(
-        state = listState,
-        modifier = Modifier
-            .fillMaxSize()
-    ) {
-        //Spacer(modifier = Modifier.height(16.dp))
-        item {
-            Column {
-                Banner(
-                    images = images,
-                    previewPercent = 0f,
-                    ps,
-                    modifier = Modifier
-                        .padding(vertical = 16.dp)
-                        .height(200.dp)
-                )
+        @OptIn(ExperimentalFoundationApi::class)
+        @Composable
+        private fun HomeDetail(
+            listState: LazyListState,
+            images: List<Int>,
+            homeViewModel: HomeViewModel,
+            navController: NavController,
+        ) {
+            val ps = rememberPagerState {
+                images.size
+            }
+            LazyColumn(
+                state = listState,
+                modifier = Modifier
+                    .fillMaxSize()
+            ) {
+                item {
+                    Column {
+                        Banner(
+                            images = images,
+                            previewPercent = 0f,
+                            ps,
+                            modifier = Modifier
+                                .padding(vertical = 16.dp)
+                                .height(200.dp)
+                        )
 
-                Box(modifier = Modifier.align(Alignment.CenterHorizontally)) {
-                    Row {
-                        images.forEachIndexed { index, _ ->
+                        Box(modifier = Modifier.align(Alignment.CenterHorizontally)) {
+                            Row {
+                                images.forEachIndexed { index, _ ->
+                                    Box(
+                                        modifier = Modifier
+                                            .size(12.dp)
+                                            .clip(CircleShape)
+                                            .background(
+                                                if (ps.currentPage == index) MaterialTheme.colorScheme.primaryContainer
+                                                else colorResource(id = R.color.back)
+                                            )
+                                    )
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                }
+                            }
+                        }
+
+                        Row(horizontalArrangement = Arrangement.Center) {
                             Box(
                                 modifier = Modifier
-                                    .size(12.dp)
-                                    .clip(CircleShape)
-                                    .background(
-                                        if (ps.currentPage == index) MaterialTheme.colorScheme.primaryContainer
-                                        else colorResource(id = R.color.back)
-                                    )
+                                    .fillMaxWidth()
+                                    .height(82.dp)
+                                    .padding(16.dp)
+                                    .clip(MaterialTheme.shapes.extraLarge)
+                                    .weight(1f)
+                                    .background(color = colorResource(id = R.color.back))
+                            ) {
+                                Text(
+                                    text = "输入您想要的功能",
+                                    modifier = Modifier.align(Alignment.Center),
+                                    style = MaterialTheme.typography.bodyLarge
+                                )
+                            }
+
+                            Icon(
+                                imageVector = Icons.TwoTone.Search, contentDescription = "搜素",
+                                modifier = Modifier
+                                    .align(Alignment.CenterVertically)
+                                    .size(36.dp)
+
                             )
-                            Spacer(modifier = Modifier.width(8.dp))
+
+                            Spacer(modifier = Modifier.width(16.dp))
                         }
                     }
+
                 }
 
-                Row(horizontalArrangement = Arrangement.Center) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(82.dp)
-                            .padding(16.dp)
-                            .clip(MaterialTheme.shapes.extraLarge)
-                            .weight(1f)
-                            .background(color = colorResource(id = R.color.back))
-                    ) {
-                        Text(
-                            text = "输入您想要的功能",
-                            modifier = Modifier.align(Alignment.Center),
-                            style = MaterialTheme.typography.bodyLarge
+                item {
+                    Column(modifier = Modifier.height(720.dp)) {
+                        FunctionLayout(homeViewModel.functions, navController)
+                    }
+                }
+            }
+        }
+
+        @Composable
+        private fun FunctionLayout(
+            functions: List<GroupModel>,
+            navController: NavController,
+        ) {
+            functions.forEach { group ->
+                Text(
+                    text = group.title,
+                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                    modifier = Modifier.padding(horizontal = Dimensions.DefaultPadding)
+                )
+
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(2),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    items(group.datas.size) {
+                        val function = group.datas[it]
+                        NavItem(
+                            icon = function.icon,
+                            name = function.title,
+                            subName = function.subTitle,
+                            iconShape = Shapes.Rounded4StarShape,
+                            modifier = Modifier
+                                .padding(16.dp)
+                                .width(160.dp)
+                                .height(120.dp)
+                                .clip(MaterialTheme.shapes.extraLarge)
+                                .clickable {
+                                    navController.navigate(function.router)
+                                }
                         )
                     }
-
-                    Icon(
-                        imageVector = Icons.TwoTone.Search, contentDescription = "搜素",
-                        modifier = Modifier
-                            .align(Alignment.CenterVertically)
-                            .size(36.dp)
-
-                    )
-
-                    Spacer(modifier = Modifier.width(16.dp))
                 }
             }
-
         }
-
-        item {
-            Column(modifier = Modifier.height(720.dp)) {
-                FunctionLayout(homeViewModel.functions, navController)
-            }
-        }
-    }
-}
-
-@Composable
-private fun FunctionLayout(
-    functions: List<GroupModel>,
-    navController: NavController,
-) {
-    functions.forEach { group ->
-        Text(
-            text = group.title,
-            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-            modifier = Modifier.padding(horizontal = Dimensions.DefaultPadding)
-        )
-
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(2),
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            items(group.datas.size) {
-                val function = group.datas[it]
-                NavItem(
-                    icon = function.icon,
-                    name = function.title,
-                    subName = function.subTitle,
-                    iconShape = Shapes.Rounded4StarShape,
-                    modifier = Modifier
-                        .padding(16.dp)
-                        .width(160.dp)
-                        .height(120.dp)
-                        .clip(MaterialTheme.shapes.extraLarge)
-                        .clickable {
-                            navController.navigate(function.router)
-                        }
-                )
-            }
-        }
-    }
-}
-
 @RequiresApi(Build.VERSION_CODES.O)
 @Preview
 @Composable

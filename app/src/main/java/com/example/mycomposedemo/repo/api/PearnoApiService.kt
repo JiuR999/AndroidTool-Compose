@@ -4,6 +4,7 @@ import com.example.mycomposedemo.models.History
 import com.example.mycomposedemo.repo.models.pearno.BrainTeasersModel
 import com.example.mycomposedemo.repo.models.pearno.HotNew
 import com.example.mycomposedemo.repo.models.pearno.KFCText
+import com.example.mycomposedemo.repo.models.pearno.XHSImageModel
 import com.example.mycomposedemo.router.Screen
 import retrofit2.http.GET
 import retrofit2.http.Query
@@ -24,6 +25,10 @@ interface PearnoApiService {
     //脑筋急转弯
     @GET("brainteasers")
     suspend fun getBrainteasers(): BrainTeasersModel
+
+    @GET("xhhimg/")
+    suspend fun getXHSImages(@Query("url") url : String): XHSImageModel
+
 
     //舔狗日记
     @GET("jdyl/tiangou.php")

@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.twotone.KeyboardArrowDown
@@ -101,6 +102,7 @@ fun ExpandableCard(functions : List<NavigationModel>,
                         val item = functions[it]
                         Box(
                             modifier = Modifier
+                                .height(42.dp)
                                 .padding(8.dp)
                                 .shadow(2.dp, MaterialTheme.shapes.extraLarge)
                                 .background(
@@ -114,7 +116,7 @@ fun ExpandableCard(functions : List<NavigationModel>,
 
                             Text(
                                 text = item.title,
-                                modifier = Modifier.padding(4.dp),
+                                modifier = Modifier.padding(4.dp).align(Alignment.Center),
                                 style = typography.bodySmall
                             )
                         }

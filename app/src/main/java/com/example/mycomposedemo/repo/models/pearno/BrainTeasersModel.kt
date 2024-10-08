@@ -7,7 +7,7 @@ data class BrainTeasersModel(
     val code: Int = 400,
     val `data`: Data = Data(),
     val msg: String = ""
-):BasicResponseModel(code, msg)
+) : BasicResponseModel(code, msg)
 
 data class Data(
     val answer: String = "",

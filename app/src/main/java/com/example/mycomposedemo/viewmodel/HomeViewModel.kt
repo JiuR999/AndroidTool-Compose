@@ -1,7 +1,9 @@
 package com.example.mycomposedemo.viewmodel
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.twotone.Chat
 import androidx.compose.material.icons.twotone.AccessTime
+import androidx.compose.material.icons.twotone.Analytics
 import androidx.compose.material.icons.twotone.Chat
 import androidx.compose.material.icons.twotone.Movie
 import androidx.compose.material.icons.twotone.Newspaper
@@ -41,6 +43,12 @@ internal fun getRecommandFunctions(): List<NavigationModel> {
             icon = Icons.TwoTone.Wallpaper,
             router = Screen.WallerPaper.router
         ),
+        NavigationModel(
+            title = "Analyzer",
+            subTitle = "解析小红书图集",
+            icon = Icons.TwoTone.Analytics,
+            router = Screen.XiaoHongShu.router
+        ),
     )
 }
 
@@ -66,7 +74,7 @@ internal fun getInfoFunctions(): List<NavigationModel> {
         NavigationModel(
             title = "GPT",
             subTitle = "与大模型开始聊天吧",
-            icon = Icons.TwoTone.Chat,
+            icon = Icons.AutoMirrored.TwoTone.Chat,
             router = Screen.Chat.router
         ),
         NavigationModel(
